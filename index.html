@@ -5,8 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
+    <div
+      class="card bg-secondary shadow d-sm-inline-block m-1"
+      style="width: 400px"
+    >
+      <h5 class="text-white m-3">User info</h5>
+      <ul id="user-info" class="list-group list-group-flush font-weight-bold">
+        <li class="list-group-item">
+          Name: <span data-text-field="name" class="font-weight-normal"></span>
+        </li>
+        <li class="list-group-item">
+          User name:
+          <span data-text-field="username" class="font-weight-normal"></span>
+        </li>
+        <li class="list-group-item">
+          e-mail:
+          <span data-text-field="email" class="font-weight-normal"></span>
+        </li>
+        <!-- <li class="list-group-item">
+          Address:
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              Street:
+              <span
+                data-text-field="address-street"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              Suite:
+              <span
+                data-text-field="address-suite"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              City:
+              <span
+                data-text-field="address-city"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              ZIP:
+              <span
+                data-text-field="address-zipcode"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              GEO:
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  lat:
+                  <span
+                    data-text-field="address-geo-lat"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item">
+                  lng:
+                  <span
+                    data-text-field="address-geo-lng"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li> -->
+        <li class="list-group-item">
+          Phone:
+          <span data-text-field="phone" class="font-weight-normal"></span>
+        </li>
+        <li class="list-group-item">
+          Web:
+          <span data-text-field="website" class="font-weight-normal"></span>
+        </li>
+        <!-- <li class="list-group-item">
+          Company:
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              Name:
+              <span
+                data-text-field="company-name"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              Catch phrase:
+              <span
+                data-text-field="company-catchPhrase"
+                class="font-weight-normal"
+              ></span>
+            </li>
+            <li class="list-group-item">
+              bs:
+              <span
+                data-text-field="company-bs"
+                class="font-weight-normal"
+              ></span>
+            </li>
+          </ul>
+        </li> -->
+      </ul>
+    </div>
+    <div
+      class="card bg-secondary shadow d-sm-inline-block m-1"
+      style="width: 400px"
+    >
+      <h5 class="text-white m-3">List of users</h5>
+      <ul id="list-of-users" class="list-group list-group-flush"></ul>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>
