@@ -13,117 +13,217 @@
     />
   </head>
   <body>
-    <div
-      class="card bg-secondary shadow d-sm-inline-block m-1"
-      style="width: 400px"
-    >
-      <h5 class="text-white m-3">User info</h5>
-      <ul id="user-info" class="list-group list-group-flush font-weight-bold">
-        <li class="list-group-item">
-          Name: <span data-text-field="name" class="font-weight-normal"></span>
-        </li>
-        <li class="list-group-item">
-          User name:
-          <span data-text-field="username" class="font-weight-normal"></span>
-        </li>
-        <li class="list-group-item">
-          e-mail:
-          <span data-text-field="email" class="font-weight-normal"></span>
-        </li>
-        <!-- <li class="list-group-item">
-          Address:
-          <ul class="list-group list-group-flush">
+    <div class="card-deck p-4" style="width: 960px">
+      <div class="card d-inline-block shadow p-2 m-2">
+        <!-- Форма добавить пользователя -->
+        <div class="card bg-secondary m-1">
+          <h5 class="card-title text-white m-3">Add new user</h5>
+          <form>
+            <ul class="list-group list-group-flush font-italic">
+              <li class="list-group-item">
+                <label for="name">Name: *</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  style="float: right; width: 70%"
+                />
+                <div
+                  class="alert alert-warning mt-2 mb-0"
+                  role="alert"
+                  id="warning-name"
+                  style="display: none"
+                >
+                  <strong>Warning!</strong>
+                  <p class="text-right m-0">
+                    Enter another value in the "Name" field.
+                  </p>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <label for="email">Email:</label>
+                <input
+                  type="text"
+                  name="email"
+                  id="email"
+                  style="float: right; width: 70%"
+                />
+              </li>
+              <li class="list-group-item">
+                <label for="username">User name: *</label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  style="float: right; width: 70%"
+                />
+                <div
+                  class="alert alert-warning mt-2 mb-0"
+                  role="alert"
+                  id="warning-username"
+                  style="display: none"
+                >
+                  <strong>Warning!</strong>
+                  <p class="text-right m-0">
+                    Enter another value in the "User name" field.
+                  </p>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <label for="phone">Phone:</label>
+                <input
+                  type="text"
+                  name="phone"
+                  id="phone"
+                  style="float: right; width: 70%"
+                />
+              </li>
+              <li class="list-group-item">
+                <label for="website">Web:</label>
+                <input
+                  type="text"
+                  name="website"
+                  id="website"
+                  style="float: right; width: 70%"
+                />
+              </li>
+              <li class="list-group-item">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg btn-block"
+                  id="btnSubmit"
+                >
+                  Add
+                </button>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <!-- Вывод списка пользователей -->
+        <div class="card bg-secondary m-1">
+          <h5 class="card-title text-white m-3">List of users</h5>
+          <ul id="list-of-users" class="list-group list-group-flush"></ul>
+        </div>
+      </div>
+      <!-- Вывод информации о выбранном пользователе -->
+      <div
+        class="card d-inline-block shadow p-2 m-2"
+        style="width: 400px; height: 100%"
+      >
+        <div class="card bg-secondary m-1">
+          <h5 class="card-title text-white m-3">User info</h5>
+          <ul
+            id="user-info"
+            class="list-group list-group-flush font-weight-bold"
+          >
             <li class="list-group-item">
-              Street:
+              Name:
+              <span data-text-field="name" class="font-weight-normal"></span>
+            </li>
+            <li class="list-group-item">
+              User name:
               <span
-                data-text-field="address-street"
+                data-text-field="username"
                 class="font-weight-normal"
               ></span>
             </li>
             <li class="list-group-item">
-              Suite:
-              <span
-                data-text-field="address-suite"
-                class="font-weight-normal"
-              ></span>
+              e-mail:
+              <span data-text-field="email" class="font-weight-normal"></span>
             </li>
             <li class="list-group-item">
-              City:
-              <span
-                data-text-field="address-city"
-                class="font-weight-normal"
-              ></span>
-            </li>
-            <li class="list-group-item">
-              ZIP:
-              <span
-                data-text-field="address-zipcode"
-                class="font-weight-normal"
-              ></span>
-            </li>
-            <li class="list-group-item">
-              GEO:
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                  lat:
+              Address:
+              <ul class="list-group-flush">
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  Street:
                   <span
-                    data-text-field="address-geo-lat"
+                    data-text-field="address-street"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  Suite:
+                  <span
+                    data-text-field="address-suite"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  City:
+                  <span
+                    data-text-field="address-city"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  ZIP:
+                  <span
+                    data-text-field="address-zipcode"
                     class="font-weight-normal"
                   ></span>
                 </li>
                 <li class="list-group-item">
-                  lng:
+                  GEO:
+                  <ul class="list-group-flush">
+                    <li
+                      class="list-group-item text-secondary font-weight-normal p-0"
+                    >
+                      lat:
+                      <span
+                        data-text-field="address-geo-lat"
+                        class="font-weight-normal font-italic"
+                      ></span>
+                    </li>
+                    <li
+                      class="list-group-item text-secondary font-weight-normal p-0"
+                    >
+                      lng:
+                      <span
+                        data-text-field="address-geo-lng"
+                        class="font-weight-normal font-italic"
+                      ></span>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              Phone:
+              <span data-text-field="phone" class="font-weight-normal"></span>
+            </li>
+            <li class="list-group-item">
+              Web:
+              <span data-text-field="website" class="font-weight-normal"></span>
+            </li>
+            <li class="list-group-item">
+              Company:
+              <ul class="list-group-flush">
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  Name:
                   <span
-                    data-text-field="address-geo-lng"
+                    data-text-field="company-name"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  Catch phrase:
+                  <span
+                    data-text-field="company-catchPhrase"
+                    class="font-weight-normal"
+                  ></span>
+                </li>
+                <li class="list-group-item text-info font-weight-normal p-0">
+                  bs:
+                  <span
+                    data-text-field="company-bs"
                     class="font-weight-normal"
                   ></span>
                 </li>
               </ul>
             </li>
           </ul>
-        </li> -->
-        <li class="list-group-item">
-          Phone:
-          <span data-text-field="phone" class="font-weight-normal"></span>
-        </li>
-        <li class="list-group-item">
-          Web:
-          <span data-text-field="website" class="font-weight-normal"></span>
-        </li>
-        <!-- <li class="list-group-item">
-          Company:
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              Name:
-              <span
-                data-text-field="company-name"
-                class="font-weight-normal"
-              ></span>
-            </li>
-            <li class="list-group-item">
-              Catch phrase:
-              <span
-                data-text-field="company-catchPhrase"
-                class="font-weight-normal"
-              ></span>
-            </li>
-            <li class="list-group-item">
-              bs:
-              <span
-                data-text-field="company-bs"
-                class="font-weight-normal"
-              ></span>
-            </li>
-          </ul>
-        </li> -->
-      </ul>
-    </div>
-    <div
-      class="card bg-secondary shadow d-sm-inline-block m-1"
-      style="width: 400px"
-    >
-      <h5 class="text-white m-3">List of users</h5>
-      <ul id="list-of-users" class="list-group list-group-flush"></ul>
+        </div>
+      </div>
     </div>
     <script src="app.js"></script>
   </body>

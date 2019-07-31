@@ -1,4 +1,4 @@
-//Функция получаем на сервере объект JSON, исходя из запроса и парсит его
+//Функция получает на сервере объект JSON, исходя из запроса, парсит его
 function makeGetRequest(method, url, cb) {
   const xhr = new XMLHttpRequest();
 
@@ -11,47 +11,60 @@ function makeGetRequest(method, url, cb) {
   xhr.send();
 }
 
-//Адресс сервера, блок в документе, куда положим список пользователей
-//Блок для вывода информации о пользователе
+//Адресс сервера. Блок в документе, куда выведем список пользователей
+//Блок в документе для вывода информации о пользователе
 const usersURL = "https://jsonplaceholder.typicode.com/users";
-const id_usersUL = document.querySelector("#list-of-users");
-const id_infoUL = document.querySelector("#user-info");
+const ul_users = document.querySelector("#list-of-users");
+const ul_info = document.querySelector("#user-info");
+const btnSubmit = document.querySelector("#btnSubmit");
 
 //Функция выводит список пользователей
 function renderUsersList(users) {
-  const objOfUsers = users.reduce((acc, user) => {
-    acc[user.id] = user;
-    return acc;
-  }, {});
+  const fragment = document.createDocumentFragment();
+
   users.forEach(el => {
     const user_li = document.createElement("li");
     user_li.dataset.userId = el.id;
     user_li.className = "list-group-item list-group-item-action";
     user_li.textContent = el.username;
-
-    id_usersUL.appendChild(user_li);
+    //Добавляем объект с пользователем во фрейм, назначаем событие
+    fragment.appendChild(user_li);
     user_li.addEventListener("click", el => {
-      const selectUsersLI = id_usersUL.querySelector("li.active");
+      //Снимаем выделение со всех элементов списка
+      const selectUsersLI = ul_users.querySelector("li.active");
       if (selectUsersLI) selectUsersLI.classList.remove("active");
-
+      //Выделяем нужный элемент и выводим информацию о пользователе
       el.target.classList.add("active");
-      console.dir(objOfUsers);
-      outUserInfo(objOfUsers[el.target.dataset.userId]);
+      outUserInfo(
+        users.find(user => user.id === Number(el.target.dataset.userId))
+      );
     });
   });
+
+  //добавляем сгенерированный фрагмент в документ
+  ul_users.appendChild(fragment);
 }
 
-//Функция выводит информацию о пользователе
-function outUserInfo(user) {
-  console.log(user);
-  for (const key in user) {
-    console.log(key);
-    const value = user[key];
+//Рекурсивная функция выводит информацию о пользователе из вложенных полей
+function outUserInfo(user, rootField = "") {
+  //Если в текущем поле объекта не вложенный объект - выводим значение,
+  //иначе вызываем функцию с вложенным объектом
+  for (const key in user)
     if (typeof user[key] !== "object") {
-      const infoSpan = id_infoUL.querySelector(`span[data-text-field=${key}]`);
-      if (infoSpan) infoSpan.textContent = value;
+      const infoSpan = ul_info.querySelector(
+        `span[data-text-field=${rootField + key}]`
+      );
+      if (infoSpan) infoSpan.textContent = user[key];
+    } else {
+      outUserInfo(user[key], rootField + key + "-");
     }
-  }
+}
+
+//Функция создает запись о новом пользователе
+function OnAddUser() {
+  //Зчем закрывает?!
+  btnSubmit = document.querySelector("#btnSubmit");
+  alert();
 }
 
 //Получаем список пользователей на сервере
