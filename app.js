@@ -1,12 +1,10 @@
-//Функция получает на сервере объект JSON, исходя из запроса, парсит его
+//Функция получает и отправляет на сервер данные
 function makeRequest(method, url, cb, userObj) {
   try {
     const body = JSON.stringify(userObj);
     const xhr = new XMLHttpRequest();
 
-    //Событие завершения получения данных
     xhr.addEventListener("load", () => {
-      //Статус не в диапазоне 200-299. Т.е. загрузка завершилось с ошибкой
       if (!String(xhr.status).startsWith("2")) {
         cb(`Error! Status code:${xhr.status}`);
         return;
@@ -15,7 +13,6 @@ function makeRequest(method, url, cb, userObj) {
       cb(null, resParse);
     });
 
-    //Событие ошибки
     xhr.addEventListener("error", () => cb("Error! Error event received."));
     xhr.open(method, url);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -25,8 +22,7 @@ function makeRequest(method, url, cb, userObj) {
   }
 }
 
-//Адресс сервера. Блок в документе, куда выведем список пользователей
-//Блок в документе для вывода информации о пользователе
+//Адресс сервера. Основные списки в документе
 const usersURL = "https://jsonplaceholder.typicode.com/users";
 const ul_users = document.querySelector("#list-of-users");
 const ul_info = document.querySelector("#user-info");
@@ -40,17 +36,14 @@ function renderUsersList(users) {
     user_li.dataset.userId = el.id;
     user_li.className = "list-group-item list-group-item-action";
     user_li.textContent = el.username;
-    //Добавляем объект с пользователем во фрейм, назначаем событие
+
     fragment.appendChild(user_li);
     user_li.addEventListener("click", el => {
-      //у всех удаляем класс "active"
       ul_users
         .querySelectorAll("li.active")
         .forEach(el => el.classList.remove("active"));
-      //у кликнутого элемента делаем тоггл класса
       el.target.classList.toggle("active");
 
-      //Выведем информацию выбранного пользователя
       ul_info.querySelectorAll("li span").forEach(el => (el.textContent = ""));
       outUserInfo(
         users.find(user => user.id === Number(el.target.dataset.userId))
@@ -58,14 +51,11 @@ function renderUsersList(users) {
     });
   });
 
-  //добавляем сгенерированный фрагмент в документ
   ul_users.appendChild(fragment);
 }
 
 //Рекурсивная функция выводит информацию о пользователе из вложенных полей
 function outUserInfo(user, rootField = "") {
-  //Если в текущем поле объекта не вложенный объект - выводим значение,
-  //иначе вызываем функцию с вложенным объектом
   for (const key in user)
     if (typeof user[key] !== "object") {
       const infoSpan = ul_info.querySelector(
@@ -78,11 +68,8 @@ function outUserInfo(user, rootField = "") {
 }
 
 //Функция проверяет наличие значений в полях с переданными названиями
-//если все поля заполненны возвращает true, иначе возвращает false и
-//создает div-ы с предупрежденияим
 function checkRequiredFields() {
   let result = true;
-  //Удаляем все старые div-ы с предупреждениями
   document.forms[0]
     .querySelectorAll('[role="alert"]')
     .forEach(el => el.remove());
@@ -90,12 +77,8 @@ function checkRequiredFields() {
   for (const field of arguments) {
     const inputField = document.forms[0].querySelector(`#${field}`);
 
-    //Проверяем заполнены ли обязаельные поля в форме,
-    //если нет, создаем div с предупреждением под каждым проверяемым input-ом
     if (!inputField.value) {
       result = false;
-
-      //В родительском элементе находим label и берем красивое название поля
       const fieldTitle = inputField.parentElement
         .querySelector("label")
         .textContent.slice(
@@ -105,7 +88,6 @@ function checkRequiredFields() {
             .textContent.indexOf(":")
         );
 
-      //Разметка div с предупреждением
       const divWarning = document.createElement("div");
       divWarning.className = "alert alert-warning mt-2 mb-0";
       divWarning.setAttribute("role", "alert");
@@ -128,11 +110,8 @@ function checkRequiredFields() {
 //Функция создает объект с новым пользователем, и отправляет на сервер
 function OnAddUser(el) {
   el.preventDefault();
-
-  //Если НЕ все обязательные поля заполнены, прерываем функцию
   if (!checkRequiredFields("name", "username")) return;
 
-  //Собираем все введеные значения о новом пользователе в объект
   const userObj = Array.from(
     document.forms[0].querySelectorAll("input")
   ).reduce((acc, el) => {
@@ -140,8 +119,6 @@ function OnAddUser(el) {
     return acc;
   }, {});
 
-  //Отправляем заполненный объект пользователя на сервер, если объект успешно
-  //добавлен на сервере, добавляем его в наш список
   makeRequest(
     "POST",
     usersURL,
@@ -155,7 +132,7 @@ function OnAddUser(el) {
     },
     userObj
   );
-  //сбрасываем форму
+
   el.target.closest("form").reset();
 }
 
@@ -168,5 +145,5 @@ makeRequest("GET", usersURL, (err, res) => {
   renderUsersList(res);
 });
 
-//Назначаем обработчик события на кнопку "Add", добавляющее пользователя
+//Назначаем обработчик события на кнопку "Add", добавляющий пользователя
 document.querySelector("#btnSubmit").addEventListener("click", OnAddUser);
