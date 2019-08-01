@@ -1,14 +1,28 @@
 //Функция получает на сервере объект JSON, исходя из запроса, парсит его
-function makeGetRequest(method, url, cb) {
-  const xhr = new XMLHttpRequest();
+function makeRequest(method, url, cb, userObj) {
+  try {
+    const body = JSON.stringify(userObj);
+    const xhr = new XMLHttpRequest();
 
-  xhr.addEventListener("load", () => {
-    const resParse = JSON.parse(xhr.responseText);
-    cb(resParse);
-  });
+    //Событие завершения получения данных
+    xhr.addEventListener("load", () => {
+      //Статус не в диапазоне 200-299. Т.е. загрузка завершилось с ошибкой
+      if (!String(xhr.status).startsWith("2")) {
+        cb(`Error! Status code:${xhr.status}`);
+        return;
+      }
+      const resParse = JSON.parse(xhr.responseText);
+      cb(null, resParse);
+    });
 
-  xhr.open(method, url);
-  xhr.send();
+    //Событие ошибки
+    xhr.addEventListener("error", () => cb("Error! Error event received."));
+    xhr.open(method, url);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(body);
+  } catch (err) {
+    cb(err);
+  }
 }
 
 //Адресс сервера. Блок в документе, куда выведем список пользователей
@@ -16,7 +30,6 @@ function makeGetRequest(method, url, cb) {
 const usersURL = "https://jsonplaceholder.typicode.com/users";
 const ul_users = document.querySelector("#list-of-users");
 const ul_info = document.querySelector("#user-info");
-const btnSubmit = document.querySelector("#btnSubmit");
 
 //Функция выводит список пользователей
 function renderUsersList(users) {
@@ -30,11 +43,15 @@ function renderUsersList(users) {
     //Добавляем объект с пользователем во фрейм, назначаем событие
     fragment.appendChild(user_li);
     user_li.addEventListener("click", el => {
-      //Снимаем выделение со всех элементов списка
-      const selectUsersLI = ul_users.querySelector("li.active");
-      if (selectUsersLI) selectUsersLI.classList.remove("active");
-      //Выделяем нужный элемент и выводим информацию о пользователе
-      el.target.classList.add("active");
+      //у всех удаляем класс "active"
+      ul_users
+        .querySelectorAll("li.active")
+        .forEach(el => el.classList.remove("active"));
+      //у кликнутого элемента делаем тоггл класса
+      el.target.classList.toggle("active");
+
+      //Выведем информацию выбранного пользователя
+      ul_info.querySelectorAll("li span").forEach(el => (el.textContent = ""));
       outUserInfo(
         users.find(user => user.id === Number(el.target.dataset.userId))
       );
@@ -60,12 +77,96 @@ function outUserInfo(user, rootField = "") {
     }
 }
 
-//Функция создает запись о новом пользователе
-function OnAddUser() {
-  //Зчем закрывает?!
-  btnSubmit = document.querySelector("#btnSubmit");
-  alert();
+//Функция проверяет наличие значений в полях с переданными названиями
+//если все поля заполненны возвращает true, иначе возвращает false и
+//создает div-ы с предупрежденияим
+function checkRequiredFields() {
+  let result = true;
+  //Удаляем все старые div-ы с предупреждениями
+  document.forms[0]
+    .querySelectorAll('[role="alert"]')
+    .forEach(el => el.remove());
+
+  for (const field of arguments) {
+    const inputField = document.forms[0].querySelector(`#${field}`);
+
+    //Проверяем заполнены ли обязаельные поля в форме,
+    //если нет, создаем div с предупреждением под каждым проверяемым input-ом
+    if (!inputField.value) {
+      result = false;
+
+      //В родительском элементе находим label и берем красивое название поля
+      const fieldTitle = inputField.parentElement
+        .querySelector("label")
+        .textContent.slice(
+          0,
+          inputField.parentElement
+            .querySelector("label")
+            .textContent.indexOf(":")
+        );
+
+      //Разметка div с предупреждением
+      const divWarning = document.createElement("div");
+      divWarning.className = "alert alert-warning mt-2 mb-0";
+      divWarning.setAttribute("role", "alert");
+
+      const strongWarning = document.createElement("strong");
+      strongWarning.textContent = "Warning!";
+      divWarning.appendChild(strongWarning);
+      const pWarning = document.createElement("p");
+      pWarning.className = "text-right m-0";
+      pWarning.textContent = `Enter another value in the "${fieldTitle}" field.`;
+      divWarning.appendChild(pWarning);
+
+      inputField.parentElement.appendChild(divWarning);
+    }
+  }
+
+  return result;
 }
 
-//Получаем список пользователей на сервере
-makeGetRequest("GET", usersURL, renderUsersList);
+//Функция создает объект с новым пользователем, и отправляет на сервер
+function OnAddUser(el) {
+  el.preventDefault();
+
+  //Если НЕ все обязательные поля заполнены, прерываем функцию
+  if (!checkRequiredFields("name", "username")) return;
+
+  //Собираем все введеные значения о новом пользователе в объект
+  const userObj = Array.from(
+    document.forms[0].querySelectorAll("input")
+  ).reduce((acc, el) => {
+    acc[el.id] = el.value;
+    return acc;
+  }, {});
+
+  //Отправляем заполненный объект пользователя на сервер, если объект успешно
+  //добавлен на сервере, добавляем его в наш список
+  makeRequest(
+    "POST",
+    usersURL,
+    (err, res) => {
+      if (err) {
+        alert(err);
+        return;
+      }
+      renderUsersList([res]);
+      console.log(res);
+    },
+    userObj
+  );
+  //сбрасываем форму
+  el.target.closest("form").reset();
+}
+
+//Получаем список пользователей на сервере, проверяем наличие ошибок
+makeRequest("GET", usersURL, (err, res) => {
+  if (err) {
+    alert(err);
+    return;
+  }
+  renderUsersList(res);
+});
+
+//Назначаем обработчик события на кнопку "Add", добавляющее пользователя
+document.querySelector("#btnSubmit").addEventListener("click", OnAddUser);
