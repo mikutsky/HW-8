@@ -22,8 +22,9 @@ function makeRequest(method, url, cb, userObj) {
   }
 }
 
-//Адресс сервера. Основные списки в документе
+//Адресс сервера. Основные списки и форма в документе
 const usersURL = "https://jsonplaceholder.typicode.com/users";
+const form_addUser = document.querySelector('form[name="add-user"]');
 const ul_users = document.querySelector("#list-of-users");
 const ul_info = document.querySelector("#user-info");
 const usersArr = [];
@@ -75,37 +76,21 @@ function outUserInfo(user, rootField = "") {
 //Функция проверяет наличие значений в полях с переданными названиями
 function checkRequiredFields() {
   let result = true;
-  document.forms[0]
-    .querySelectorAll('[role="alert"]')
-    .forEach(el => el.remove());
+
+  form_addUser.querySelectorAll('[role="alert"]').forEach(el => el.remove());
 
   for (const field of arguments) {
-    const inputField = document.forms[0].querySelector(`#${field}`);
+    const inputField = form_addUser.querySelector(`input[name="${field}"]`);
 
     if (!inputField.value) {
       result = false;
-      const fieldTitle = inputField.parentElement
-        .querySelector("label")
-        .textContent.slice(
-          0,
-          inputField.parentElement
-            .querySelector("label")
-            .textContent.indexOf(":")
-        );
-
-      const divWarning = document.createElement("div");
-      divWarning.className = "alert alert-warning mt-2 mb-0";
-      divWarning.setAttribute("role", "alert");
-
-      const strongWarning = document.createElement("strong");
-      strongWarning.textContent = "Warning!";
-      divWarning.appendChild(strongWarning);
-      const pWarning = document.createElement("p");
-      pWarning.className = "text-right m-0";
-      pWarning.textContent = `Enter another value in the "${fieldTitle}" field.`;
-      divWarning.appendChild(pWarning);
-
-      inputField.parentElement.appendChild(divWarning);
+      console.dir(inputField);
+      inputField.parentElement.innerHTML += `
+        <div class="alert alert-warning mt-2 mb-0" role="alert">
+          <strong>Warning!</strong>
+              <p class="text-right m-0">Enter another value in this field.
+              </p>
+        </div>`;
     }
   }
 
@@ -117,12 +102,13 @@ function OnAddUser(el) {
   el.preventDefault();
   if (!checkRequiredFields("name", "username")) return;
 
-  const userObj = Array.from(
-    document.forms[0].querySelectorAll("input")
-  ).reduce((acc, inp) => {
-    acc[inp.id] = inp.value;
-    return acc;
-  }, {});
+  const userObj = Array.from(form_addUser.querySelectorAll("input")).reduce(
+    (acc, inp) => {
+      acc[inp.name] = inp.value;
+      return acc;
+    },
+    {}
+  );
 
   makeRequest(
     "POST",
