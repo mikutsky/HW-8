@@ -26,32 +26,37 @@ function makeRequest(method, url, cb, userObj) {
 const usersURL = "https://jsonplaceholder.typicode.com/users";
 const ul_users = document.querySelector("#list-of-users");
 const ul_info = document.querySelector("#user-info");
+const usersArr = [];
 
 //Функция выводит список пользователей
 function renderUsersList(users) {
   const fragment = document.createDocumentFragment();
 
-  users.forEach(el => {
-    const user_li = document.createElement("li");
-    user_li.dataset.userId = el.id;
-    user_li.className = "list-group-item list-group-item-action";
-    user_li.textContent = el.username;
-
-    fragment.appendChild(user_li);
-    user_li.addEventListener("click", el => {
-      ul_users
-        .querySelectorAll("li.active")
-        .forEach(el => el.classList.remove("active"));
-      el.target.classList.toggle("active");
-
-      ul_info.querySelectorAll("li span").forEach(el => (el.textContent = ""));
-      outUserInfo(
-        users.find(user => user.id === Number(el.target.dataset.userId))
-      );
-    });
-  });
+  users.forEach(user => fragment.appendChild(listUserItemTemplate(user)));
 
   ul_users.appendChild(fragment);
+}
+
+//Функция оформляет одну запись пользователя согласно шаблону
+function listUserItemTemplate(user) {
+  const user_li = document.createElement("li");
+  user_li.dataset.userId = user.id;
+  user_li.className = "list-group-item list-group-item-action";
+  user_li.textContent = user.username;
+
+  user_li.addEventListener("click", el => {
+    ul_users
+      .querySelectorAll("li.active")
+      .forEach(el => el.classList.remove("active"));
+    el.target.classList.toggle("active");
+
+    ul_info.querySelectorAll("li span").forEach(el => (el.textContent = ""));
+    outUserInfo(
+      usersArr.find(user => String(user.id) === el.target.dataset.userId)
+    );
+  });
+
+  return user_li;
 }
 
 //Рекурсивная функция выводит информацию о пользователе из вложенных полей
@@ -114,8 +119,8 @@ function OnAddUser(el) {
 
   const userObj = Array.from(
     document.forms[0].querySelectorAll("input")
-  ).reduce((acc, el) => {
-    acc[el.id] = el.value;
+  ).reduce((acc, inp) => {
+    acc[inp.id] = inp.value;
     return acc;
   }, {});
 
@@ -127,8 +132,11 @@ function OnAddUser(el) {
         alert(err);
         return;
       }
-      renderUsersList([res]);
-      console.log(res);
+      //Добавляю (usersArr.length-10), т.к. сервер всегда возвращает id=11
+      res.id += usersArr.length - 10;
+
+      usersArr.push(res);
+      ul_users.appendChild(listUserItemTemplate(res));
     },
     userObj
   );
@@ -142,6 +150,7 @@ makeRequest("GET", usersURL, (err, res) => {
     alert(err);
     return;
   }
+  usersArr.push(...res);
   renderUsersList(res);
 });
 
