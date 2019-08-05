@@ -84,7 +84,6 @@ function checkRequiredFields() {
 
     if (!inputField.value) {
       result = false;
-      console.dir(inputField);
       inputField.parentElement.innerHTML += `
         <div class="alert alert-warning mt-2 mb-0" role="alert">
           <strong>Warning!</strong>
